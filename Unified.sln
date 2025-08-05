@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IncidentEventService", "src\IncidentEventService\IncidentEventService.csproj", "{1A7C1450-36D5-49E8-B51C-F49ACB3882FB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitEventService", "src\UnitEventService\UnitEventService.csproj", "{8C611A40-B1EB-4345-A2F7-F1CC89648934}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1A7C1450-36D5-49E8-B51C-F49ACB3882FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A7C1450-36D5-49E8-B51C-F49ACB3882FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A7C1450-36D5-49E8-B51C-F49ACB3882FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A7C1450-36D5-49E8-B51C-F49ACB3882FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8C611A40-B1EB-4345-A2F7-F1CC89648934}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C611A40-B1EB-4345-A2F7-F1CC89648934}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C611A40-B1EB-4345-A2F7-F1CC89648934}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C611A40-B1EB-4345-A2F7-F1CC89648934}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
