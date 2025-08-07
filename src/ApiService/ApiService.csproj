@@ -300,7 +300,7 @@
         <Compile Include="EventHandlers\Hierarchy\GetAgencyIdByName.cs" />
         <Compile Include="EventHandlers\Incidents\CreateComment.cs" />
         <Compile Include="EventHandlers\Incidents\CreateIncident.cs" />
-        <Compile Include="EventHandlers\Incidents\GetCallerTypeByNameAndAgencyId.cs" />
+        <Compile Include="EventHandlers\Incidents\GetCallerTypesByAgency.cs" />
         <Compile Include="EventHandlers\Incidents\GetCallMethods.cs" />
         <Compile Include="EventHandlers\Incidents\GetIncident.cs" />
         <Compile Include="EventHandlers\Incidents\GetIncidents.cs" />

@@ -53,7 +53,7 @@ namespace ApiService.Config
             builder.RegisterType<CreateIncident>().InstancePerDependency();
             builder.RegisterType<CreateIncidentFieldsParam>().InstancePerDependency();
             builder.RegisterType<CreateIncidentHierarchyParams>().InstancePerDependency();
-            builder.RegisterType<GetCallerTypeByNameAndAgencyId>().InstancePerDependency();
+            builder.RegisterType<GetCallerTypesByAgency>().InstancePerDependency();
             builder.RegisterType<GetCallMethods>().InstancePerDependency();
             builder.RegisterType<GetIncident>().InstancePerDependency();
             builder.RegisterType<GetIncidents>().InstancePerDependency();

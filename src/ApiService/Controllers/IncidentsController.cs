@@ -22,6 +22,9 @@ public class IncidentsController : ApiController
     private readonly UpdateCallMethod _updateCallMethod;
     private readonly UpdateCallerType _updateCallerType;
     private readonly UpdateUserDefinedField _updateUserDefinedField;
+    private readonly GetCallMethods _getCallMethods;
+    private readonly GetCallerTypesByAgency _getCallerTypesByAgency;
+    private readonly GetUserDefinedFields _getUserDefinedFields;
     private readonly Validation _validation;
 
     public IncidentsController(
@@ -33,6 +36,9 @@ public class IncidentsController : ApiController
         UpdateCallMethod updateCallMethod,
         UpdateCallerType updateCallerType,
         UpdateUserDefinedField updateUserDefinedField,
+        GetCallMethods getCallMethods,
+        GetCallerTypesByAgency getCallerTypesByAgency,
+        GetUserDefinedFields getUserDefinedFields,
         Validation validation)
     {
         _createIncident = createIncident;
@@ -43,6 +49,9 @@ public class IncidentsController : ApiController
         _updateCallMethod = updateCallMethod;
         _updateCallerType = updateCallerType;
         _updateUserDefinedField = updateUserDefinedField;
+        _getCallMethods = getCallMethods;
+        _getCallerTypesByAgency = getCallerTypesByAgency;
+        _getUserDefinedFields = getUserDefinedFields;
         _validation = validation;
     }
     
@@ -77,6 +86,57 @@ public class IncidentsController : ApiController
             return NotFound();
 
         return Ok(incident);
+    }
+    
+    [HttpGet]
+    [Route("userdefinedfields/{agencyName}")]
+    [RequirePermission("IncidentView")]
+    public async Task<IHttpActionResult> GetUserDefinedFields(string agencyName)
+    {
+        if (string.IsNullOrEmpty(agencyName))
+            return BadRequest("Agency ID is required.");
+
+        // Validate agency
+        var agencyId = await _validation.ValidateAgencyAsync(agencyName);
+        if (agencyId <= 0) return BadRequest($"Agency '{agencyName}' is not valid.");
+
+        var userDefinedFields = await _getUserDefinedFields.GetUserDefinedFieldsAsync(agencyId);
+
+        return Ok(userDefinedFields);
+    }
+    
+    [HttpGet]
+    [Route("callmethods/{agencyName}")]
+    [RequirePermission("IncidentView")]
+    public async Task<IHttpActionResult> GetCallMethods(string agencyName)
+    {
+        if (string.IsNullOrEmpty(agencyName))
+            return BadRequest("Agency ID is required.");
+
+        // Validate agency
+        var agencyId = await _validation.ValidateAgencyAsync(agencyName);
+        if (agencyId <= 0) return BadRequest($"Agency '{agencyName}' is not valid.");
+        
+        var callMethods = await _getCallMethods.GetCallMethodsAsync(agencyId);
+        
+        return Ok(callMethods);
+    }
+    
+    [HttpGet]
+    [Route("callertypes/{agencyName}")]
+    [RequirePermission("IncidentView")]
+    public async Task<IHttpActionResult> GetCallerType(string agencyName)
+    {
+        if (string.IsNullOrEmpty(agencyName))
+            return BadRequest("Agency ID is required.");
+
+        // Validate agency
+        var agencyId = await _validation.ValidateAgencyAsync(agencyName);
+        if (agencyId <= 0) return BadRequest($"Agency '{agencyName}' is not valid.");
+        
+        var callerTypes = await _getCallerTypesByAgency.GetCallerTypeAsync(agencyId);
+        
+        return Ok(callerTypes);
     }
     
     [HttpPost]
@@ -144,7 +204,6 @@ public class IncidentsController : ApiController
         return Ok($"Updated call taken by for incident ID: {incidentId} to employee: {personnel.Name}");
     }
     
-    // TODO: Create a method to get all call methods for an agency
     
     [HttpPost]
     [Route("{incidentId}/callmethod/{callMethod}")]
@@ -171,7 +230,7 @@ public class IncidentsController : ApiController
         return Ok($"Updated call method for incident ID: {incidentId} to '{validCallMethod.Name}'");
     }
     
-    // TODO: Create a method to get all caller types for an agency
+    
     
     [HttpPost]
     [Route("{incidentId}/callertype/{callerType}")]
@@ -198,7 +257,7 @@ public class IncidentsController : ApiController
         return Ok($"Updated caller type for incident ID: {incidentId} to '{validCallerType.Name}'");
     }
     
-    // TODO: Create a method to get all user defined fields for an agency
+    
 
     [HttpPost]
     [Route("{incidentId}/userdefinedfield")]
