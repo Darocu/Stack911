@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using TriTech.VisiCAD;
 using TriTech.VisiCAD.Incidents;
@@ -15,8 +14,9 @@ public class GetIncidents
         _cadManager = cadManager;
     }
     
-    public async Task<List<Incident>> GetAllIncidentsAsync()
+    public Task<List<Incident>> Handle()
     {
-        return await Task.Run(() => _cadManager.IncidentQueryEngine.GetIncidentsByActiveCalls());
+        var incidents = _cadManager.IncidentQueryEngine.GetIncidentsByActiveCalls();
+        return Task.FromResult(incidents);
     }
 }

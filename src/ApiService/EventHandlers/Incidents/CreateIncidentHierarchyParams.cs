@@ -17,12 +17,10 @@ public class CreateIncidentHierarchyParams
     }
     
     // TODO: Validate agency before proceeding
-    internal async Task<CreateIncidentHierarchyParam> CreateIncidentHierarchyParamAsync(string agency)
-    { 
-        var agencyId = await Task.Run(() => _getAgencyIdByName.GetAgencyIdAsync(agency));
-
-        var hierarchyParams = await Task.Run(() => CreateIncidentHierarchyParam.CreateIncidentHierarchyParamByAgency(_cadManager, agencyId));
-
-        return hierarchyParams;
+    public Task<CreateIncidentHierarchyParam> Handle(string agency)
+    {
+        var agencyId = _getAgencyIdByName.Handle(agency);
+        var hierarchyParams = CreateIncidentHierarchyParam.CreateIncidentHierarchyParamByAgency(_cadManager, agencyId);
+        return Task.FromResult(hierarchyParams);
     }
 }

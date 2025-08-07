@@ -20,7 +20,7 @@ public class UpdatePositionsToDatabase
         _connectionString = serviceSettings.EccDataConnectionString;
     }
     
-    public async Task UploadPositionsToDatabaseAsync(List<PositionResponse> positions, CancellationToken cancellationToken)
+    public async Task HandleAsync(List<PositionResponse> positions, CancellationToken cancellationToken)
     {
         var tableName = _hostName == "ECCCADAPI" ? "dbo.Positions" : "dbo.Positions_Test";
 

@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using TriTech.VisiCAD;
+﻿using TriTech.VisiCAD;
 using TriTech.VisiCAD.Persons;
 
 namespace ApiService.EventHandlers.Radios;
@@ -13,8 +12,8 @@ public class SavePersonnelRadio
         _cadManager = cadManager;
     }
     
-    public async Task SavePersonnelRadioAsync(PersonnelRadioFields personnelRadioFields)
+    public void Handle(PersonnelRadioFields personnelRadioFields)
     {
-        await Task.Run(() => _cadManager.PersonActionEngine.SavePersonnelRadio(personnelRadioFields));
+        _cadManager.PersonActionEngine.SavePersonnelRadio(personnelRadioFields);
     }
 }

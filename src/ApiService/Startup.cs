@@ -5,7 +5,6 @@ using Microsoft.Extensions.Configuration;
 using Owin;
 using Serilog;
 
-
 namespace ApiService;
 
 public class Startup
@@ -25,7 +24,7 @@ public class Startup
 
         var container = DependencyRegistration.Register(config, _configuration, _logger);
 
-        AppDomain.CurrentDomain.ProcessExit += (_, __) => StartupConfig.SafeShutdown(container);
+        AppDomain.CurrentDomain.ProcessExit += (_, _) => StartupConfig.SafeShutdown(container);
 
         app.UseAutofacMiddleware(container);
         app.UseAutofacWebApi(config);

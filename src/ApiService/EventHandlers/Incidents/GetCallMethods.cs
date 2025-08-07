@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using TriTech.VisiCAD;
 using TriTech.VisiCAD.Incidents;
@@ -16,11 +14,9 @@ public class GetCallMethods
         _cadManager = cadManager;
     }
 
-    public async Task<List<MethodOfCallReceived>> GetCallMethodsAsync(int agencyId)
+    public Task<List<MethodOfCallReceived>> Handle(int agencyId)
     {
-        if (agencyId <= 0)
-            throw new ArgumentException("Agency ID must be greater than zero.", nameof(agencyId));
-
-        return await Task.Run(() => _cadManager.IncidentQueryEngine.GetMethodOfCallReceivedsByAgencyID(agencyId));
+        var callMethods = _cadManager.IncidentQueryEngine.GetMethodOfCallReceivedsByAgencyID(agencyId);
+        return Task.FromResult(callMethods);
     }
 }

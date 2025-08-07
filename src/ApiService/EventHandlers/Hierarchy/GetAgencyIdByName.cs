@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Threading.Tasks;
 using TriTech.VisiCAD;
 
 namespace ApiService.EventHandlers.Hierarchy;
@@ -13,9 +12,9 @@ public class GetAgencyIdByName
         _cadManager = cadManager;
     }
     
-    internal async Task<int> GetAgencyIdAsync(string agencyName)
+    public int Handle(string agencyName)
     {
-        var agencyId = await Task.Run(() => _cadManager.HierarchyQueryEngine.GetAgencyIDByName(agencyName));
+        var agencyId = _cadManager.HierarchyQueryEngine.GetAgencyIDByName(agencyName);
         
         if (agencyId == 0)
             throw new KeyNotFoundException($"Agency with name '{agencyName}' not found.");

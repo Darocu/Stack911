@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using TriTech.VisiCAD;
+﻿using TriTech.VisiCAD;
 
 namespace ApiService.EventHandlers.Incidents;
 
@@ -12,8 +11,8 @@ public class UpdateUserDefinedField
         _cadManager = cadManager;
     }
     
-    public async Task UpdateUserDefinedFieldAsync(int incidentId, string userFieldName, string value)
+    public void Handle(int incidentId, string userFieldName, string value)
     {
-        await Task.Run(() => _cadManager.IncidentActionEngine.SaveIncidentUserDataField(incidentId, userFieldName, value));
+        _cadManager.IncidentActionEngine.SaveIncidentUserDataField(incidentId, userFieldName, value);
     }
 }

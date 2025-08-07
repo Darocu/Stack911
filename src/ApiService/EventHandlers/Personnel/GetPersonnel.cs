@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using ApiService.Models.Personnel;
 using TriTech.VisiCAD;
 
 namespace ApiService.EventHandlers.Personnel;
@@ -14,10 +13,9 @@ public class GetPersonnel
         _cadManager = cadManager;
     }
 
-    public async Task<IEnumerable<TriTech.VisiCAD.Persons.Personnel>> GetPersonnelAsync()
+    public Task<List<TriTech.VisiCAD.Persons.Personnel>> Handle()
     {
         var personnel = _cadManager.PersonQueryEngine.GetPersonnel();
-        return personnel;
+        return Task.FromResult(personnel);
     }
-    
 }

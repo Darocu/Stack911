@@ -14,7 +14,7 @@ public class GetPositionsFromDatabase
     {
         _connectionString = serviceSettings.EccDataConnectionString;
     }
-    public async Task<List<string>> GetPositionsFromDatabaseAsync(CancellationToken cancellationToken)
+    public async Task<List<string>> HandleAsync(CancellationToken cancellationToken)
     {
         var positions = new List<string>();
         using var connection = new SqlConnection(_connectionString);

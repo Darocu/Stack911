@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using TriTech.VisiCAD;
 
 namespace ApiService.EventHandlers.Personnel;
@@ -13,12 +12,10 @@ public class GetPerson
         _cadManager = cadManager;
     }
     
-    public async Task<TriTech.VisiCAD.Persons.Personnel> GetPersonAsync(string employeeId)
+    public Task<TriTech.VisiCAD.Persons.Personnel> Handle(string employeeId)
     {
-        if (string.IsNullOrWhiteSpace(employeeId))
-            throw new ArgumentException("Employee ID cannot be null or empty.", nameof(employeeId));
-        
-        return await Task.Run(() => _cadManager.PersonQueryEngine.GetPersonnelByCode(employeeId) ?? _cadManager.PersonQueryEngine.GetPersonnelByName(employeeId));
+        var person = _cadManager.PersonQueryEngine.GetPersonnelByCode(employeeId)
+                     ?? _cadManager.PersonQueryEngine.GetPersonnelByName(employeeId);
+        return Task.FromResult(person);
     }
-    
 }

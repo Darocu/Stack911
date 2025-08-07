@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using TriTech.Common.Interface;
 using TriTech.VisiCAD;
@@ -15,7 +14,7 @@ public class CreateComment
         _cadManager = cadManager;
     }
 
-    public async Task<int> CreateCommentAsync(string comment, int incidentId, string employeeId)
+    public async Task<int> Handle(string comment, int incidentId, string employeeId)
     {
         if (string.IsNullOrEmpty(comment))
             throw new ArgumentNullException(nameof(comment), "Comment data not found, comment not created");
@@ -23,7 +22,7 @@ public class CreateComment
         return await AddIncidentCommentAsync(comment, incidentId, employeeId);
     }
 
-    public async Task<int> CreateCommentAsync(string comment, string incidentNumber, string employeeId)
+    public async Task<int> Handle(string comment, string incidentNumber, string employeeId)
     {
         if (string.IsNullOrEmpty(comment))
             throw new ArgumentNullException(nameof(comment), "Comment data not found, comment not created");
@@ -45,7 +44,6 @@ public class CreateComment
             throw new ArgumentException($"Incident with ID {incidentId} is not active", nameof(incidentId));
         
         var incidentCommentId = 0;
-        List<int> incidentIdListWhereSharedCommentsAdded;
 
         var formattedComment = comment.Replace(@"\r\n", Environment.NewLine)
                                      .Replace(@"\n", Environment.NewLine)
@@ -65,7 +63,7 @@ public class CreateComment
                 0,
                 commentCategory,
                 out incidentCommentId,
-                out incidentIdListWhereSharedCommentsAdded));
+                out _));
 
         if (incidentCommentId <= 0)
             throw new InvalidOperationException(

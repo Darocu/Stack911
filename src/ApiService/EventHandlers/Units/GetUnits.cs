@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using TriTech.VisiCAD;
 using TriTech.VisiCAD.Units;
@@ -15,8 +14,9 @@ public class GetUnits
         _cadManager = cadManager;
     }
     
-    public async Task<List<Vehicle>> GetUnitsAsync()
+    public Task<List<Vehicle>> GetUnitsAsync()
     {
-        return await Task.Run(() => _cadManager.UnitQueryEngine.GetVehicles());
+        var vehicles = _cadManager.UnitQueryEngine.GetVehicles();
+        return Task.FromResult(vehicles);
     }
 }

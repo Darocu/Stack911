@@ -1,7 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using TriTech.VisiCAD;
+using TriTech.VisiCAD.Persons;
 
 namespace ApiService.EventHandlers.Radios;
 
@@ -14,8 +14,9 @@ public class GetPersonnelRadiosByRadioCode
         _cadManager = cadManager;
     }
     
-    public async Task<IEnumerable<TriTech.VisiCAD.Persons.PersonnelRadio>> GetPersonnelRadiosByRadioCodeAsync(string radioCode)
+    public Task<List<PersonnelRadio>> Handle(string radioCode)
     {
-        return await Task.Run(() =>_cadManager.PersonQueryEngine.GetPersonnelRadiosByRadioCode(radioCode));
+        var radios = _cadManager.PersonQueryEngine.GetPersonnelRadiosByRadioCode(radioCode);
+        return Task.FromResult(radios);
     }
 }

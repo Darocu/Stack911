@@ -14,8 +14,9 @@ public class GetUserDefinedFields
         _cadManager = cadManager;
     }
     
-    public async Task<List<UserField>> GetUserDefinedFieldsAsync(int agencyId)
+    public Task<List<UserField>> Handle(int agencyId)
     {
-        return await Task.Run(() => _cadManager.IncidentQueryEngine.GetUserFieldsByAgencyID(agencyId));
+        var userDefinedFields = _cadManager.IncidentQueryEngine.GetUserFieldsByAgencyID(agencyId);
+        return Task.FromResult(userDefinedFields);
     }
 }

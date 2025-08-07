@@ -13,9 +13,9 @@ public class GetPersonnelRadiosIncludingTemporary
         _cadManager = cadManager;
     }
     
-    public async Task<IEnumerable<string>> GetPersonnelRadiosIncludingTemporaryAsync(int personnelId)
+    public Task<List<string>> Handle(int personnelId)
     {
         var radios = _cadManager.PersonQueryEngine.GetPersonnelRadiosIncludingTemporary(personnelId);
-        return radios;
+        return Task.FromResult(radios);
     }
 }

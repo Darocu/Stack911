@@ -16,7 +16,7 @@ public class Validation
     private readonly GetCallerTypesByAgency _getCallerTypesByAgency;
     private readonly GetUserDefinedFields _getUserDefinedFields;
     private readonly GetAgencyIdByName _getAgencyIdByName;
-    
+
     public Validation(
         GetIncident getIncident,
         GetPerson getPerson,
@@ -33,31 +33,30 @@ public class Validation
         _getAgencyIdByName = getAgencyIdByName;
     }
 
-    public async Task<Incident> ValidateIncidentAsync(string incidentId)
+    public Task<Incident> ValidateIncident(string incidentId)
     {
         if (string.IsNullOrWhiteSpace(incidentId))
-            return null;
+            return Task.FromResult<Incident>(null);
 
-        if (int.TryParse(incidentId, out var incId))
-            return await _getIncident.GetIncidentAsync(incId);
-        else
-            return await _getIncident.GetIncidentAsync(incidentId);
+        return int.TryParse(incidentId, out var incId)
+            ? _getIncident.Handle(incId) : _getIncident.Handle(incidentId);
     }
 
-    public async Task<TriTech.VisiCAD.Persons.Personnel> ValidatePersonnelAsync(string employeeId)
+    public Task<TriTech.VisiCAD.Persons.Personnel> ValidatePersonnelAsync(string employeeId)
     {
         if (string.IsNullOrWhiteSpace(employeeId))
-            return null;
+            return Task.FromResult<TriTech.VisiCAD.Persons.Personnel>(null);
 
-        return await _getPerson.GetPersonAsync(employeeId);
+        return _getPerson.Handle(employeeId);
     }
-    
-    public async Task<MethodOfCallReceived> ValidateCallMethodAsync(int agencyId, string callMethod)
+
+    public Task<MethodOfCallReceived> ValidateCallMethod(int agencyId, string callMethod)
     {
         if (string.IsNullOrWhiteSpace(callMethod))
             throw new ArgumentException("Call method cannot be null or empty.", nameof(callMethod));
 
-        var callMethods = await _getCallMethods.GetCallMethodsAsync(agencyId);
+        var callMethodsTask = _getCallMethods.Handle(agencyId);
+        var callMethods = callMethodsTask.Result;
 
         var matched = callMethods
             .FirstOrDefault(m => string.Equals(m.Name.ToString(), callMethod, StringComparison.OrdinalIgnoreCase));
@@ -65,31 +64,33 @@ public class Validation
         if (matched == null)
             throw new ArgumentException($"Invalid call method: {callMethod}", nameof(callMethod));
 
-        return matched;
+        return Task.FromResult(matched);
     }
-    
-    public async Task<CallerType> ValidateCallerTypeAsync(int agencyId, string callerTypeName)
+
+    public Task<CallerType> ValidateCallerType(int agencyId, string callerTypeName)
     {
         if (string.IsNullOrWhiteSpace(callerTypeName))
             throw new ArgumentException("Caller type cannot be null or empty.", nameof(callerTypeName));
 
-        var callerType = await _getCallerTypesByAgency.GetCallerTypeAsync(agencyId);
-        
+        var callerTypeTask = _getCallerTypesByAgency.Handle(agencyId);
+        var callerType = callerTypeTask.Result;
+
         var matched = callerType
             .FirstOrDefault(ct => string.Equals(ct.Name, callerTypeName, StringComparison.OrdinalIgnoreCase));
 
         if (matched == null)
             throw new ArgumentException($"Invalid caller type: {callerTypeName}", nameof(callerTypeName));
 
-        return matched;
+        return Task.FromResult(matched);
     }
-    
-    public async Task<UserField> ValidateUserDefinedFieldAsync(int agencyId, string fieldName)
+
+    public Task<UserField> ValidateUserDefinedField(int agencyId, string fieldName)
     {
         if (string.IsNullOrWhiteSpace(fieldName))
             throw new ArgumentException("User defined field name cannot be null or empty.", nameof(fieldName));
 
-        var userDefinedFields = await _getUserDefinedFields.GetUserDefinedFieldsAsync(agencyId);
+        var userDefinedFieldsTask = _getUserDefinedFields.Handle(agencyId);
+        var userDefinedFields = userDefinedFieldsTask.Result;
 
         var matched = userDefinedFields
             .FirstOrDefault(f => string.Equals(f.Name, fieldName, StringComparison.OrdinalIgnoreCase));
@@ -97,21 +98,19 @@ public class Validation
         if (matched == null)
             throw new ArgumentException($"Invalid user defined field: {fieldName}", nameof(fieldName));
 
-        return matched;
+        return Task.FromResult(matched);
     }
-    
-    public async Task<int> ValidateAgencyAsync(string agency)
+
+    public Task<int> ValidateAgency(string agency)
     {
         if (string.IsNullOrWhiteSpace(agency))
             throw new ArgumentException("Agency name cannot be null or empty.", nameof(agency));
 
-        var agencyId = await _getAgencyIdByName.GetAgencyIdAsync(agency);
+        var agencyId = _getAgencyIdByName.Handle(agency);
 
         if (agencyId <= 0)
             throw new ArgumentException($"Invalid agency name: {agency}", nameof(agency));
 
-        return agencyId;
+        return Task.FromResult(agencyId);
     }
-        
-        
 }

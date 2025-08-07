@@ -16,7 +16,7 @@ class Program
             Console.WriteLine($"Service started at {baseAddress}. Press Ctrl+C to exit...");
             var exitEvent = new ManualResetEvent(false);
 
-            Console.CancelKeyPress += (sender, e) =>
+            Console.CancelKeyPress += (_, e) =>
             {
                 e.Cancel = true;
                 exitEvent.Set();

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using TriTech.VisiCAD;
 using TriTech.VisiCAD.Incidents;
@@ -15,9 +14,9 @@ public class GetCallerTypesByAgency
         _cadManager = cadManager;
     }
     
-    public async Task<List<CallerType>> GetCallerTypeAsync(int agencyId)
+    public Task<List<CallerType>> Handle(int agencyId)
     {
-        _cadManager.IncidentQueryEngine.GetCallerTypesByAgencyID(agencyId);
-        return await Task.Run(() => _cadManager.IncidentQueryEngine.GetCallerTypesByAgencyID(agencyId));
+        var callerTypes = _cadManager.IncidentQueryEngine.GetCallerTypesByAgencyID(agencyId); 
+        return Task.FromResult(callerTypes);
     }
 }

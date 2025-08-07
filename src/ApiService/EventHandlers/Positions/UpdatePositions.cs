@@ -17,7 +17,7 @@ public class UpdatePositions
         _apiCadManager = apiCadManager;
     }
 
-    public async Task<List<PositionResponse>> UpdatePositionsAsync(List<string> positions, CancellationToken cancellationToken)
+    public Task<List<PositionResponse>> Handle(List<string> positions, CancellationToken cancellationToken)
     {
         var positionList = new List<PositionResponse>();
         var sectors = new Dictionary<int, bool>
@@ -74,6 +74,6 @@ public class UpdatePositions
             });
         }
 
-        return positionList;
+        return Task.FromResult(positionList);
     }
 }

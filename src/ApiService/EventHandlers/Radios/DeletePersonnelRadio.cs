@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using TriTech.VisiCAD;
+﻿using TriTech.VisiCAD;
 
 namespace ApiService.EventHandlers.Radios;
 
@@ -12,8 +11,8 @@ public class DeletePersonnelRadio
         _cadManager = cadManager;
     }
     
-    public async Task DeletePersonnelRadioAsync(int personnelRadioId)
+    public void Handle(int personnelRadioId)
     {
-        await Task.Run(() => _cadManager.PersonActionEngine.DeletePersonnelRadio(personnelRadioId));
+        _cadManager.PersonActionEngine.DeletePersonnelRadio(personnelRadioId);
     }
 }

@@ -15,7 +15,7 @@ public class CreateIncidentFieldsParam
     }
         
     // TODO: Validate incidentFieldsParam before returning
-    public Task<TriTech.VisiCAD.Incidents.CreateIncidentFieldsParam> CreateIncidentFieldsParamAsync(
+    public Task<TriTech.VisiCAD.Incidents.CreateIncidentFieldsParam> Handle(
         string problemName,
         string addressOrLocationOrIntersectionOrLatLonOrAlias,
         string cityName,

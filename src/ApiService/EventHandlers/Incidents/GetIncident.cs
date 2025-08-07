@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using ApiService.Models;
-using ApiService.Models.Incidents;
 using TriTech.VisiCAD;
 using TriTech.VisiCAD.Incidents;
 
@@ -16,17 +14,17 @@ public class GetIncident
         _cadManager = cadManager;
     }
 
-    public async Task<Incident> GetIncidentAsync(string incidentNumber)
+    public Task<Incident> Handle(string incidentNumber)
     {
         var incidentId = _cadManager.IncidentQueryEngine.GetIncidentIDByIncidentNumber(incidentNumber);
 
         if (!incidentId.HasValue)
             throw new ArgumentException($"Incident not found for number {incidentNumber}", nameof(incidentNumber));
-        
-        return await GetIncidentAsync(incidentId.Value);
+    
+        return Handle(incidentId.Value);
     }
     
-    public Task<Incident> GetIncidentAsync(int incidentId)
+    public Task<Incident> Handle(int incidentId)
     {
         var incident = _cadManager.IncidentQueryEngine.GetIncident(incidentId);
 

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -33,14 +32,14 @@ public class PositionsController : ApiController
     {
         try
         {
-            var trackedPositions = await _getPositionsFromDatabase.GetPositionsFromDatabaseAsync(CancellationToken.None);
+            var trackedPositions = await _getPositionsFromDatabase.HandleAsync(CancellationToken.None);
             
             if (trackedPositions == null || trackedPositions.Count == 0)
                 return NotFound();
             
-            var positions = await _updatePositions.UpdatePositionsAsync(trackedPositions, CancellationToken.None);
+            var positions = await _updatePositions.Handle(trackedPositions, CancellationToken.None);
 
-            await _updatePositionsToDatabase.UploadPositionsToDatabaseAsync(positions, CancellationToken.None);
+            await _updatePositionsToDatabase.HandleAsync(positions, CancellationToken.None);
 
             var result = positions;
             

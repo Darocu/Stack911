@@ -12,10 +12,7 @@ using ApiService.EventHandlers.Positions;
 using ApiService.EventHandlers.Radios;
 using ApiService.EventHandlers.Units;
 using ApiService.Models;
-using ApiService.Services;
-using Microsoft.Build.Framework;
 using TriTech.VisiCAD;
-using TriTech.VisiCAD.Interfaces;
 using ILogger = Serilog.ILogger;
 
 namespace ApiService.Config

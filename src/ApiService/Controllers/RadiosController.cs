@@ -44,7 +44,7 @@ public class RadiosController : ApiController
     [RequirePermission("RadioView")]
     public IHttpActionResult GetAll()
     {
-        var personnel = _getPersonnel.GetPersonnelAsync()
+        var personnel = _getPersonnel.Handle()
             .Result.Where(person =>
                 person.AgencyID == 2 &&
                 person.JurisdictionID == 2 &&
@@ -54,9 +54,9 @@ public class RadiosController : ApiController
         var personnelList = personnel.Select(person => new
         {
             CHRISID = person.Code,
-            Name = person.Name,
+            person.Name,
             District = person.GetPersonnelDivision().GetSector().GetDisplayName(),
-            RadioID = _getPersonnelRadiosIncludingTemporary.GetPersonnelRadiosIncludingTemporaryAsync(person.ID)
+            RadioID = _getPersonnelRadiosIncludingTemporary.Handle(person.ID)
         }).ToList();
 
         return Ok(personnelList);
@@ -80,23 +80,23 @@ public class RadiosController : ApiController
         if (!int.TryParse(payload.ChrisId, out _) || !int.TryParse(payload.RadioId, out var rId))
             throw new Exception("Invalid Chris ID or Radio ID.");
 
-        var resultPersonnelId = _getPerson.GetPersonAsync(payload.ChrisId)
+        var resultPersonnelId = _getPerson.Handle(payload.ChrisId)
             .Result?.PersonnelID;
         
         if (resultPersonnelId == null) return Ok("Failed to create radio.");
         
         var personnelId = (int)resultPersonnelId;
         
-        var personnelRadio = _getPersonnelRadiosByRadioCode.GetPersonnelRadiosByRadioCodeAsync(payload.RadioId)
+        var personnelRadio = _getPersonnelRadiosByRadioCode.Handle(payload.RadioId)
             .Result;
         
         foreach (var radio in personnelRadio.Where(radio => radio.Code == rId.ToString()))
-            await _deletePersonnelRadio.DeletePersonnelRadioAsync(radio.ID);
+            _deletePersonnelRadio.Handle(radio.ID);
         
-        var radioFields = await _createPersonnelRadioFields.CreatePersonnelRadioFieldsAsync(
+        var radioFields = await _createPersonnelRadioFields.Handle(
             null, personnelId, rId.ToString(), rId.ToString(), "Radio Name");
             
-        await _savePersonnelRadio.SavePersonnelRadioAsync(radioFields);
+        _savePersonnelRadio.Handle(radioFields);
 
 
         return Ok("Created radio successfully.");
@@ -107,32 +107,32 @@ public class RadiosController : ApiController
     [RequirePermission("Administrator")]
     public async Task<IHttpActionResult> Update(UpdateRadioRequest payload)
     {
-        if (!int.TryParse(payload.ChrisId, out var chrisId) || !int.TryParse(payload.OldRadioId, out var oldRadioId) || !int.TryParse(payload.NewRadioId, out var newRadioId))
+        if (!int.TryParse(payload.ChrisId, out _) || !int.TryParse(payload.OldRadioId, out var oldRadioId) || !int.TryParse(payload.NewRadioId, out var newRadioId))
             throw new Exception("Invalid Chris ID or Radio ID.");
         
-        var personnelRadio = _getPersonnelRadiosByRadioCode.GetPersonnelRadiosByRadioCodeAsync(payload.OldRadioId)
+        var personnelRadio = _getPersonnelRadiosByRadioCode.Handle(payload.OldRadioId)
             .Result;        
         
         foreach (var radio in personnelRadio.Where(radio => radio.Code == oldRadioId.ToString()))
-            await _deletePersonnelRadio.DeletePersonnelRadioAsync(radio.ID);
+            _deletePersonnelRadio.Handle(radio.ID);
         
-        var personnelId = _getPerson.GetPersonAsync(payload.ChrisId)
+        var personnelId = _getPerson.Handle(payload.ChrisId)
             .Result?.PersonnelID;
         
         if (personnelId == null) return Ok("Failed to update radio.");
         
         var pId = (int)personnelId;
         
-        personnelRadio = _getPersonnelRadiosByRadioCode.GetPersonnelRadiosByRadioCodeAsync(payload.NewRadioId)
+        personnelRadio = _getPersonnelRadiosByRadioCode.Handle(payload.NewRadioId)
             .Result;
         
         foreach (var radio in personnelRadio.Where(radio => radio.Code == newRadioId.ToString()))
-            await _deletePersonnelRadio.DeletePersonnelRadioAsync(radio.ID);
+            _deletePersonnelRadio.Handle(radio.ID);
         
-        var radioFields = await _createPersonnelRadioFields.CreatePersonnelRadioFieldsAsync(
+        var radioFields = await _createPersonnelRadioFields.Handle(
             null, pId, newRadioId.ToString(), newRadioId.ToString(), "Radio Name");
         
-        await _savePersonnelRadio.SavePersonnelRadioAsync(radioFields);
+        _savePersonnelRadio.Handle(radioFields);
         
         return Ok("Updated radio successfully.");
     }
@@ -145,7 +145,7 @@ public class RadiosController : ApiController
         if (!int.TryParse(payload.ChrisId, out var cId) || !int.TryParse(payload.RadioId, out var rId))
             throw new Exception("Invalid Chris ID or Radio ID.");
         
-        var personnelRadio = _getPersonnelRadiosByRadioCode.GetPersonnelRadiosByRadioCodeAsync(payload.RadioId)
+        var personnelRadio = _getPersonnelRadiosByRadioCode.Handle(payload.RadioId)
             .Result;
 
         var personnelRadios = personnelRadio.ToList();
@@ -154,7 +154,7 @@ public class RadiosController : ApiController
             throw new Exception($"Unable to delete radio ID {rId}, it is not associated with personnel {cId}...");
         
         foreach (var radio in personnelRadios.Where(radio => radio.Code == rId.ToString()))
-            await _deletePersonnelRadio.DeletePersonnelRadioAsync(radio.ID);
+            _deletePersonnelRadio.Handle(radio.ID);
         
         return Ok("Deleted radio successfully.");
     }

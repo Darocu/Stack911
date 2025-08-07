@@ -1,10 +1,8 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Web.Http;
 using ApiService.Authorization;
 using ApiService.EventHandlers;
 using ApiService.EventHandlers.Incidents;
-using ApiService.EventHandlers.Personnel;
 using ApiService.Models.Incidents;
 using TriTech.VisiCAD.Incidents;
 
@@ -60,7 +58,7 @@ public class IncidentsController : ApiController
     [RequirePermission("IncidentView")]
     public async Task<IHttpActionResult> GetAllActive()
     {
-        var incidents = await _getIncidents.GetAllIncidentsAsync();
+        var incidents = await _getIncidents.Handle();
         
         if (incidents == null || !incidents.Any()) return NotFound();
 
@@ -78,9 +76,9 @@ public class IncidentsController : ApiController
         Incident incident;
 
         if (int.TryParse(incidentId, out var incId))
-            incident = await _getIncident.GetIncidentAsync(incId);
+            incident = await _getIncident.Handle(incId);
         else
-            incident = await _getIncident.GetIncidentAsync(incidentId);
+            incident = await _getIncident.Handle(incidentId);
 
         if (incident == null)
             return NotFound();
@@ -97,10 +95,10 @@ public class IncidentsController : ApiController
             return BadRequest("Agency ID is required.");
 
         // Validate agency
-        var agencyId = await _validation.ValidateAgencyAsync(agencyName);
+        var agencyId = await _validation.ValidateAgency(agencyName);
         if (agencyId <= 0) return BadRequest($"Agency '{agencyName}' is not valid.");
 
-        var userDefinedFields = await _getUserDefinedFields.GetUserDefinedFieldsAsync(agencyId);
+        var userDefinedFields = await _getUserDefinedFields.Handle(agencyId);
 
         return Ok(userDefinedFields);
     }
@@ -114,10 +112,10 @@ public class IncidentsController : ApiController
             return BadRequest("Agency ID is required.");
 
         // Validate agency
-        var agencyId = await _validation.ValidateAgencyAsync(agencyName);
+        var agencyId = await _validation.ValidateAgency(agencyName);
         if (agencyId <= 0) return BadRequest($"Agency '{agencyName}' is not valid.");
         
-        var callMethods = await _getCallMethods.GetCallMethodsAsync(agencyId);
+        var callMethods = await _getCallMethods.Handle(agencyId);
         
         return Ok(callMethods);
     }
@@ -131,10 +129,10 @@ public class IncidentsController : ApiController
             return BadRequest("Agency ID is required.");
 
         // Validate agency
-        var agencyId = await _validation.ValidateAgencyAsync(agencyName);
+        var agencyId = await _validation.ValidateAgency(agencyName);
         if (agencyId <= 0) return BadRequest($"Agency '{agencyName}' is not valid.");
         
-        var callerTypes = await _getCallerTypesByAgency.GetCallerTypeAsync(agencyId);
+        var callerTypes = await _getCallerTypesByAgency.Handle(agencyId);
         
         return Ok(callerTypes);
     }
@@ -148,7 +146,7 @@ public class IncidentsController : ApiController
         if (payload == null)
             return BadRequest("Incident data is required.");
 
-        var incidentId = await _createIncident.CreateIncidentAsync(payload);
+        var incidentId = await _createIncident.Handle(payload);
         
         if (incidentId <= 0)
             return BadRequest("Failed to create incident.");
@@ -169,7 +167,7 @@ public class IncidentsController : ApiController
             return BadRequest("Comment data is required.");
         
         // Validate incident and personnel
-        var (incident, personnel) = (await _validation.ValidateIncidentAsync(incidentId), await _validation.ValidatePersonnelAsync(payload.EmployeeId));
+        var (incident, personnel) = (await _validation.ValidateIncident(incidentId), await _validation.ValidatePersonnelAsync(payload.EmployeeId));
         if (incident == null) return BadRequest($"Incident ID '{incidentId}' is not valid.");
         if (personnel == null) return BadRequest($"Employee ID '{payload.EmployeeId}' is not valid.");
         
@@ -194,16 +192,15 @@ public class IncidentsController : ApiController
             return BadRequest("Call taken by is required.");
 
         // Validate incident and personnel
-        var (incident, personnel) = (await _validation.ValidateIncidentAsync(incidentId), await _validation.ValidatePersonnelAsync(employeeId));
+        var (incident, personnel) = (await _validation.ValidateIncident(incidentId), await _validation.ValidatePersonnelAsync(employeeId));
         if (incident == null) return BadRequest($"Incident ID '{incidentId}' is not valid.");
         if (personnel == null) return BadRequest($"Employee ID '{employeeId}' is not valid.");
         
         // Update Call Taken By
-        await _updateCallTakingPerformedBy.UpdateCallTakingPerformedByAsync(personnel.Name, incident.ID);
+        _updateCallTakingPerformedBy.Handle(personnel.Name, incident.ID);
         
         return Ok($"Updated call taken by for incident ID: {incidentId} to employee: {personnel.Name}");
     }
-    
     
     [HttpPost]
     [Route("{incidentId}/callmethod/{callMethod}")]
@@ -218,19 +215,17 @@ public class IncidentsController : ApiController
             return BadRequest("Call taken by is required.");
 
         // Validate incident and callMethod
-        var incident = await _validation.ValidateIncidentAsync(incidentId);
+        var incident = await _validation.ValidateIncident(incidentId);
         if (incident == null) return BadRequest($"Incident ID '{incidentId}' is not valid.");
 
-        var validCallMethod = await _validation.ValidateCallMethodAsync(incident.AgencyID, callMethod);
+        var validCallMethod = await _validation.ValidateCallMethod(incident.AgencyID, callMethod);
         if (validCallMethod == null) return BadRequest($"Call method '{callMethod}' is not valid for agency ID: {incident.AgencyID}.");
         
         // Update Call Method
-        await _updateCallMethod.UpdateCallMethodAsync( incident.ID, validCallMethod.Name.ToString());
+        _updateCallMethod.Handle( incident.ID, validCallMethod.Name);
         
         return Ok($"Updated call method for incident ID: {incidentId} to '{validCallMethod.Name}'");
     }
-    
-    
     
     [HttpPost]
     [Route("{incidentId}/callertype/{callerType}")]
@@ -245,20 +240,18 @@ public class IncidentsController : ApiController
             return BadRequest("Call taken by is required.");
 
         // Validate incident and callMethod
-        var incident = await _validation.ValidateIncidentAsync(incidentId);
+        var incident = await _validation.ValidateIncident(incidentId);
         if (incident == null) return BadRequest($"Incident ID '{incidentId}' is not valid.");
         
-        var validCallerType = await _validation.ValidateCallerTypeAsync(incident.AgencyID, callerType);
+        var validCallerType = await _validation.ValidateCallerType(incident.AgencyID, callerType);
         if (validCallerType == null) return BadRequest($"Caller type '{callerType}' is not valid for agency ID: {incident.AgencyID}.");
         
         // Update Caller Type
-        await _updateCallerType.UpdateCallerTypeAsync(incident.ID, validCallerType);
+        _updateCallerType.Handle(incident.ID, validCallerType);
         
         return Ok($"Updated caller type for incident ID: {incidentId} to '{validCallerType.Name}'");
     }
     
-    
-
     [HttpPost]
     [Route("{incidentId}/userdefinedfield")]
     [RequirePermission("IncidentEdit")]
@@ -272,15 +265,15 @@ public class IncidentsController : ApiController
             return BadRequest("User defined field is required.");
 
         // Validate incident and callMethod
-        var incident = await _validation.ValidateIncidentAsync(incidentId);
+        var incident = await _validation.ValidateIncident(incidentId);
         if (incident == null) return BadRequest($"Incident ID '{incidentId}' is not valid.");
         
         // Validate User Defined Field
-        var validUdf = await _validation.ValidateUserDefinedFieldAsync(incident.AgencyID, payload.UserDefinedField);
+        var validUdf = await _validation.ValidateUserDefinedField(incident.AgencyID, payload.UserDefinedField);
         if (validUdf == null) return BadRequest($"User defined field '{payload.UserDefinedField}' is not valid for agency ID: {incident.AgencyID}.");
         
         // Update User Defined Field
-        await _updateUserDefinedField.UpdateUserDefinedFieldAsync(incident.ID, validUdf.Name, payload.Value);
+        _updateUserDefinedField.Handle(incident.ID, validUdf.Name, payload.Value);
         
         return Ok($"Updated user defined field '{validUdf.Name}' for incident ID: {incidentId} to '{payload.Value}'");
     }

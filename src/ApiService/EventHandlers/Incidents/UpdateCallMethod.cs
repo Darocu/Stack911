@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using TriTech.VisiCAD;
+﻿using TriTech.VisiCAD;
 
 namespace ApiService.EventHandlers.Incidents;
 
@@ -13,8 +11,8 @@ public class UpdateCallMethod
         _cadManager = cadManager;
     }
     
-    public async Task UpdateCallMethodAsync(int incidentId, string callMethod)
+    public void Handle(int incidentId, string callMethod)
     {
-        await Task.Run(() =>  _cadManager.IncidentActionEngine.UpdateIncidentMethodOfCallRcvd(incidentId, callMethod));
+        _cadManager.IncidentActionEngine.UpdateIncidentMethodOfCallRcvd(incidentId, callMethod);
     }
 }
