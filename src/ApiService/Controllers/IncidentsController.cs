@@ -172,7 +172,7 @@ public class IncidentsController : ApiController
         if (personnel == null) return BadRequest($"Employee ID '{payload.EmployeeId}' is not valid.");
         
         // Create Comment
-        var commentId = await _createComment.CreateCommentAsync(payload.Comment, incident.ID, payload.EmployeeId);
+        var commentId = await _createComment.Handle(payload.Comment, incident.ID, payload.EmployeeId);
         
         if (commentId <= 0) return BadRequest("Failed to create comment on incident.");
         
