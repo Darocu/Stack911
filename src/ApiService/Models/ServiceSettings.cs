@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace ApiService.Models
+﻿namespace ApiService.Models
 {
     public class ServiceSettings
     {

@@ -1,0 +1,24 @@
+@{
+    ViewBag.Title = "Cincinnati Unified Safety Toolkit API";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link rel="stylesheet" href="~/Content/HomePage.css" />
+
+<main>
+    <h2>Welcome</h2>
+    <p>Welcome to the Cincinnati Unified Safety Toolkit API. This API enables access to safety-related data and services, including incident management, position tracking, radio communications, and more.</p>
+    <p>Please use your authorized API key to access the protected endpoints.</p>
+
+    <div class="buttons">
+        <a href="https://ecc-intranet/" class="button">Explore the ECC Intranet</a>
+        <a href="/swagger" class="button">Explore API Documentation & Test Endpoints</a>
+    </div>
+
+    <h3>Getting Started</h3>
+    <ul>
+        <li><strong>API Versioning:</strong> Use <code>/api/v1/</code> as the base path for version 1 endpoints.</li>
+        <li><strong>Authentication:</strong> Provide your API key in the <code>X-API-Key</code> header.</li>
+        <li><strong>Support:</strong> Contact the ECC IT Support for access or questions.</li>
+    </ul>
+</main>

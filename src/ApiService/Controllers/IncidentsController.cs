@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Http;
 using ApiService.Authorization;
 using ApiService.EventHandlers;
@@ -146,7 +147,7 @@ public class IncidentsController : ApiController
         if (payload == null)
             return BadRequest("Incident data is required.");
 
-        var incidentId = await _createIncident.Handle(payload);
+        var incidentId = await _createIncident.HandleAsync(payload);
         
         if (incidentId <= 0)
             return BadRequest("Failed to create incident.");

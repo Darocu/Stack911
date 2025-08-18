@@ -1,6 +1,7 @@
 *appsettings.json
 logs/*
 config/*
+*TODO.md
 
 # Created by https://www.toptal.com/developers/gitignore/api/rider,visualstudio,visualstudiocode,dotnetcore,aspnetcore,csharp
 # Edit at https://www.toptal.com/developers/gitignore?templates=rider,visualstudio,visualstudiocode,dotnetcore,aspnetcore,csharp

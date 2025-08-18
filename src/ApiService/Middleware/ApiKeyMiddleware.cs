@@ -1,52 +1,44 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using ApiService.Services;
-using Microsoft.Owin;
 
 namespace ApiService.Middleware;
 
-public class ApiKeyMiddleware : OwinMiddleware
+public class ApiKeyHandler : DelegatingHandler
 {
     private readonly ApiKeyStore _apiKeyStore;
 
-    public ApiKeyMiddleware(OwinMiddleware next, ApiKeyStore apiKeyStore) : base(next)
+    public ApiKeyHandler(ApiKeyStore apiKeyStore)
     {
         _apiKeyStore = apiKeyStore;
     }
 
-    public override async Task Invoke(IOwinContext context)
+    protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        var requestPath = context.Request.Path.ToString();
+        var path = request.RequestUri.AbsolutePath;
+        if (path == "/" || path.StartsWith("/swagger"))
+            return await base.SendAsync(request, cancellationToken);
 
-        if (requestPath.Equals("/", StringComparison.OrdinalIgnoreCase) ||
-            requestPath.StartsWith("/swagger", StringComparison.OrdinalIgnoreCase) ||
-            requestPath.StartsWith("/swagger/ui", StringComparison.OrdinalIgnoreCase))
+        if (!request.Headers.TryGetValues("X-API-Key", out var apiKeys) ||
+            !_apiKeyStore.TryGetApiKeyInfo(apiKeys.FirstOrDefault(), out var keyInfo))
         {
-            await Next.Invoke(context);
-            return;
-        }
-
-        var apiKey = context.Request.Headers["X-API-Key"];
-        if (string.IsNullOrWhiteSpace(apiKey) || !_apiKeyStore.TryGetApiKeyInfo(apiKey, out var keyInfo))
-        {
-            context.Response.StatusCode = 401;
-            context.Response.ReasonPhrase = "Invalid or missing API key";
-            await context.Response.WriteAsync("API key is missing or invalid.");
-            return;
+            return request.CreateResponse(HttpStatusCode.Unauthorized, "API key is missing or invalid.");
         }
 
         var claims = new List<Claim>
         {
             new Claim(ClaimTypes.Name, "ApiKeyUser"),
-            new Claim("ApiKey", apiKey)
+            new Claim("ApiKey", apiKeys.First())
         };
         claims.AddRange(keyInfo.Permissions.Select(p => new Claim("Permission", p)));
         var identity = new ClaimsIdentity(claims, "ApiKey");
-        context.Request.User = new ClaimsPrincipal(identity);
+        request.GetRequestContext().Principal = new ClaimsPrincipal(identity);
 
-        await Next.Invoke(context);
+        return await base.SendAsync(request, cancellationToken);
     }
 }
