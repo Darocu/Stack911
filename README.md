@@ -18,12 +18,10 @@ The solution targets .NET Framework 4.8.1 (net481).
 - src/IncidentEventService
   - Type: .NET Framework background service/worker
   - Purpose: Processes and reacts to incident-related events.
-  - Notable folders: EventHandlers, Models
 
 - src/UnitEventService
   - Type: .NET Framework background service/worker
   - Purpose: Processes and reacts to unit-related events.
-  - Notable folders: EventHandlers, Models
 
 ## Requirements
 
