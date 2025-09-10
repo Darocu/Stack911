@@ -1,6 +1,8 @@
 ﻿# Stack911
 
-Stack911 is a .NET solution that provides utilizes the CentralSquare API and exposes their endpoints in REST interface as well as background services for various functionalities. The solution targets .NET Framework 4.8.1 (net481).
+Stack911 is a .NET solution that integrates with the CentralSquare API, providing access to its endpoints through a RESTful interface. It also includes background services to support various functionalities related to 911 public safety operations.
+
+The solution targets .NET Framework 4.8.1 (net481).
 
 ## Projects in this solution
 
