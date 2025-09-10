@@ -52,4 +52,3 @@ Stack911 is a .NET solution that provides utilizes the CentralSquare API and exp
   - ApiService/ — Main API
   - IncidentEventService/ — Incident events worker
   - UnitEventService/ — Unit events worker
-  - Archive/OWINApiService/ — Legacy API (archived)
