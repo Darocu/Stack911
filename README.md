@@ -35,7 +35,9 @@ The solution targets .NET Framework 4.8.1 (net481).
 3. Set the desired startup project:
    - ApiService for running the HTTP API (recommended for development/testing)
    - IncidentEventService or UnitEventService for running background workers
-4. Build and run.
+4. Create a config folder in the root folder
+5. Create a logs folder in the root folder
+6. Build and run.
 
 ## Configuration
 
